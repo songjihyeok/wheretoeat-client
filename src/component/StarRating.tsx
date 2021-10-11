@@ -3,15 +3,19 @@ import ReactDOM from 'react-dom';
 import StarRatingComponent from 'react-star-rating-component';
 import styled from "styled-components"
 
+export interface IstarProp {
+  setRating:any
+}
 
 
 
-const StarRating : React.FC = ()=> {
+export default function StarRating(props: IstarProp){
 
   const [rating, setRating] = useState(5)
 
  const onStarClick=(nextValue:number, prevValue:number, name:string) =>{
-  setRating( nextValue);
+  props.setRating( nextValue);
+  setRating(nextValue)
 }
 
   
@@ -27,4 +31,3 @@ const StarRating : React.FC = ()=> {
   );
 }
 
-export default StarRating

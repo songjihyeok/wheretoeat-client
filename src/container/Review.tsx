@@ -1,20 +1,27 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components"
-import {Space, List , Avatar } from "antd"
+import { Space, List, Avatar } from "antd"
 import { MessageOutlined, LikeOutlined, StarOutlined, PlusCircleFilled } from '@ant-design/icons';
 import CompanyThumb from "../component/CompanyThumb"
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 import { PageHeader } from 'antd';
-import {useHistory} from "react-router-dom"
+import { useHistory } from "react-router-dom"
+import initializeFirebase from "../firebaseConfig"
 
-export interface  ReviewProps {
+import { getFirestore, addDoc, collection, query, where,getDocs ,getDoc,  doc} from "firebase/firestore"
+initializeFirebase()
 
+const db = getFirestore();
+
+export interface ReviewProps {
+  match:any
 }
 
 const Container = styled.div`
     display: flex; 
     flex-direction: column;
     align-items: center;
+    position: relative;
     height: 100vh;
 `
 
@@ -24,7 +31,7 @@ const ReviewPlusCircleFilled = styled(PlusCircleFilled)`
   right: 30px; 
 `
 
-export default function Review (props:  ReviewProps) {
+export default function Review(props: ReviewProps) {
   let [theCompanyData, setTheCompanyData] = useState({
     address_name: "서울 서초구 서초동 1321",
     category_group_code: "",
@@ -39,86 +46,95 @@ export default function Review (props:  ReviewProps) {
     x: "127.02476096797658",
     y: "37.49656165613922"
   })
+  const  [review, setReview]  = useState([])
+  const place_id =  props.match.params.id
+  let history = useHistory()
+  let registerUrl = `/register/${place_id}`
 
- let history = useHistory()
+  const IconText = ({ icon, text }: { icon: any; text: string }) => (
+    <Space>
+      {React.createElement(icon)}
+      {text}
+    </Space>
+  );
 
-const listData = [];
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://ant.design',
-    title: `ant design part ${i}`,
-    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    description:
-      'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-      'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+  useEffect(()=>{
+    getReviewList()
+  },[])
+
+ const getReviewList =async ()=>{
+
+  const shopRef:any = collection(db, "shop");
+  const q = query(shopRef, where("id", "==",  place_id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach(async(doc) => {
+    const Ref:any = await collection(db, "shop",   doc.id,  "review");
+    const querySnapshot = await getDocs(Ref);
+    let reviewList:any = []
+    querySnapshot.forEach(async(doc) => {
+      console.log(doc.id, " => ", doc.data());
+      reviewList.push(doc.data())
+    });
+    setReview(reviewList)
   });
-}
-
-const IconText = ({ icon, text}: {icon: any;  text:string}) => (
-  <Space>
-    {React.createElement(icon)}
-    {text}
-  </Space>
-);
-
-
+ }
 
   return (
     <>
-    <PageHeader
-            className="site-page-header"
-            onBack={() => history.goBack()}
-            title="리뷰 목록"
-            subTitle="후기를 공유합니다"
-        />
-    <Container>
+      <PageHeader
+        className="site-page-header"
+        onBack={() => history.goBack()}
+        title="리뷰 목록"
+        subTitle="후기를 공유합니다"
+      />
+      <Container>
+        <CompanyThumb theCompanyData={theCompanyData} isReview={true} setSuccessAlert={null}></CompanyThumb>
+        <List
+          itemLayout="vertical"
+          size="large"
+          // pagination={{
+          //   onChange: page => {
+          //     console.log(page);
+          //   },
+          //   pageSize: 3,
+          // }}
+          dataSource={review}
+          // footer={
+          //   <div>
+          //     <b>ant design</b> footer part
+          //   </div>
+          // }
+          renderItem={(item: any | null) => (
 
-    <CompanyThumb theCompanyData={theCompanyData} isReview={true}></CompanyThumb>
-          <List
-    itemLayout="vertical"
-    size="large"
-    // pagination={{
-    //   onChange: page => {
-    //     console.log(page);
-    //   },
-    //   pageSize: 3,
-    // }}
-    dataSource={listData}
-    // footer={
-    //   <div>
-    //     <b>ant design</b> footer part
-    //   </div>
-    // }
-    renderItem={item => (
-      <List.Item
-        key={item.title}
-        actions={[
-          <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-          <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-          <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-        ]}
-        extra={
-          <img
-            width={272}
-            alt="logo"
-            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-          />
-        }
-      >
-        <List.Item.Meta
-          avatar={<Avatar src={item.avatar} />}
-          title={<a href={item.href}>{item.title}</a>}
-          description={item.description}
+          
+            <List.Item
+              key={item.title}
+              // actions={[
+              //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+              //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+              //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+              // ]}
+              extra={
+               item.urlList.map((element:any)=>{
+                 console.log("element", element)
+                  return <img src={element}></img>
+                })
+              }
+            >
+              <List.Item.Meta
+                avatar={<Avatar src={item.avatar} />}
+                title={<a href={item.href}>{item.title}</a>}
+                description={item.description}
+              />
+              {item.content}
+            </List.Item>
+          )}
         />
-        {item.content}
-      </List.Item>
-    )} 
-    />
-    </Container>
-    <Link to="/register">
-      <ReviewPlusCircleFilled style	={{fontSize: '50px'}}/>
-    </Link>
+        <Link to={registerUrl}>
+          <ReviewPlusCircleFilled style={{ fontSize: '50px' }} />
+        </Link>
+      </Container>
+
     </>
   );
 }

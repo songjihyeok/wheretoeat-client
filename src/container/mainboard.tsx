@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Map } from "../component/map"
 import SearchInput from "../component/Search"
 import CompanyThumb  from "../component/CompanyThumb"
+import { Alert } from "antd"
 import styled from "styled-components"
+
 import { History } from 'history';
 export interface MainboardProps{
 
 } 
-
 
 const Mainboard: React.FC<MainboardProps> = ( ) => {
   let [theCompanyData, setTheCompanyData] = useState({
@@ -24,21 +25,29 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
     x: "127.02476096797658",
     y: "37.49656165613922"
   })
+  const [successAlert, setSuccessAlert ] = useState(false)
+
   const Search = styled(SearchInput)`
     position:absolute;
     top: 30px; 
   `
+
   const getTheCompanyData = (companyData: any) => {
     setTheCompanyData(companyData)
+  
   }
 
+  const onSetSuccessAlert = ()=> {
+    setSuccessAlert(true)
+  }
 
   return (
-    <div>
-      <Search getTheCompanyData={getTheCompanyData}></Search>
-      <Map></Map>
-      <CompanyThumb theCompanyData={theCompanyData} isReview={false}></CompanyThumb>
-    </div>
+      <>
+        <Search getTheCompanyData={getTheCompanyData}></Search>
+        <Map setTheCompanyData={setTheCompanyData}></Map>
+        {successAlert? <Alert message="등록이 성공했습니다" type="success" />: null}
+        <CompanyThumb theCompanyData={theCompanyData} isReview={false} setSuccessAlert={onSetSuccessAlert}></CompanyThumb>
+    </>
   );
 }
 

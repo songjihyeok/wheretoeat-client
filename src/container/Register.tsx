@@ -7,13 +7,10 @@ import styled from "styled-components"
 import {useHistory} from "react-router-dom"
 
 export interface  RegisterProps {
+  match:any
 }
 
-const Container = styled.div`
-    display: flex; 
-    flex-direction: column;
-    align-items: center;
-`
+
 
   
 
@@ -27,12 +24,9 @@ export default function Register (props:  RegisterProps) {
             title="리뷰 등록"
             subTitle="리뷰를 등록해주세요"
         />
-    <Container>
-        <RegisterForm></RegisterForm>
- 
 
-        
-    </Container>
+        <RegisterForm match={props.match}></RegisterForm>
+
     </>
   );
 }

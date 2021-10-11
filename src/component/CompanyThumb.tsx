@@ -1,24 +1,33 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect ,useLayoutEffect} from 'react';
 import styled from "styled-components"
-import {Row, Col, Popconfirm} from "antd"
-import {Button} from "antd"
-import { useHistory} from 'react-router-dom';
+import { Row, Col, Popconfirm, Alert } from "antd"
+import { Button } from "antd"
+import { useHistory } from 'react-router-dom';
+import initializeFirebase from "../firebaseConfig"
+import { initializeApp } from 'firebase/app';
+
+import { getFirestore, addDoc, collection, query, where,getDocs ,getDoc, onSnapshot} from "firebase/firestore"
+import { IdcardOutlined } from '@ant-design/icons';
 
 export interface ICompanyThumbProps {
   theCompanyData: any
   isReview: boolean
+  setSuccessAlert: any
 }
+initializeFirebase()
 
-const CompanyThumb: React.FC <ICompanyThumbProps> =(props)=> {
+const db = getFirestore();
+
+const CompanyThumb: React.FC<ICompanyThumbProps> = (props) => {
   const ThumbContainer = styled.div`
   width: 100%;
-  position:  ${props.isReview? "static": "absolute"}; 
+  position:  ${props.isReview ? "static" : "absolute"}; 
   display:flex;
   bottom: 10px; 
   z-index: 2;
   justify-content:center;
 `
-const Thumb = styled.div`
+  const Thumb = styled.div`
   max-width: 492px;
   width: 100%;
   background-color: white;
@@ -26,80 +35,133 @@ const Thumb = styled.div`
   padding: 10px;
   margin: 0 10px;
 `
-const Address = styled.div`
+  const Address = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 `
-const ReviewButtonContainer = styled(Col)`
+  const ReviewButtonContainer = styled(Col)`
   align-items: center;
   display: flex; 
   justify-content: center;
 `
+  const CenterRow = styled(Row)`
+  display: flex; 
+  justify-content: center;
+`
 
-  
-  const [iisRegistered, setisRegistered] = useState(true)
+  const [iisRegistered, setisRegistered] = useState(false)
   let history = useHistory()
 
-const placeUrl =()=>{
-  window.open( props.theCompanyData.place_url, "_blank")
-}
-const registerHandler=()=>{
-  setisRegistered(false)
-}
+  const placeUrl = () => {
+    window.open(props.theCompanyData.place_url, "_blank")
+  }
+  const registerHandler = () => {
+    setisRegistered(true)
+    props.setSuccessAlert(true)
+    registerInfirebase()
+    // window.setTimeout(()=> setSuccessAlert(false), 2000);
+  }
 
-const reviewHandler= ()=>{
-  history.push("/review")
-}
+    const registerInfirebase = async()=>{
 
-const cancel=()=>{
+      const {id, place_name, place_url, x, y} = props.theCompanyData
 
-}
-
-const isReviewHandler =()=>{
-  if(!props.isReview ){
-    if( iisRegistered){
-      return            <ReviewButtonContainer span={12} >  <Popconfirm
-      title="장소를 등록하시겠습니까?"
-      onConfirm={registerHandler}
-      onCancel={cancel}
-      okText="네"
-      cancelText="아니오"
-    >
-         <Button>장소 등록</Button>  
-      </Popconfirm>
-                </ReviewButtonContainer>
-    } else{
-     return <ReviewButtonContainer span={12} >
-      <Button onClick={reviewHandler}>리뷰 확인</Button> 
-      </ReviewButtonContainer>
+      try {
+        const docRef = await addDoc(collection(db, "shop"),{
+          id,
+          place_name,
+          place_url,
+          x,
+          y
+        })
+      }
+      catch(e){
+        console.error(e)
+      }
     }
+
+
+  const reviewHandler = () => {
+    const {id}= props.theCompanyData
+    history.push(`/review/${id}`)
+  }
+
+  const cancel = () => {
+    
+  }
+
+ useLayoutEffect(()=>{
+  if(!props.isReview){
+    checkCompanyRegistered()
+  }
+ })
+
+const checkCompanyRegistered = async()=>{
+  const {id, place_name, place_url, x, y} = props.theCompanyData
+  let result:any = []
+  const citiesRef = collection(db, "shop");
+  const q = query(citiesRef, where("id", "==",  id));
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    result.push(doc.data())
+  });
+  console.log("result",  result)
+  if(result.length>0){
+    setisRegistered(true)
+  }else{
+    setisRegistered(false)
   }
 }
 
+  const isReviewHandler = () => {
+    if (!props.isReview) {
+      if (!iisRegistered) {
+        return <ReviewButtonContainer span={12} >  <Popconfirm
+          title="장소를 등록하시겠습니까?"
+          onConfirm={registerHandler}
+          onCancel={cancel}
+          okText="네"
+          cancelText="아니오"
+        >
+          <Button>장소 등록</Button>
+        </Popconfirm>
+        </ReviewButtonContainer>
+      } else {
+        return <ReviewButtonContainer span={12} >
+          <Button onClick={reviewHandler}>리뷰 확인</Button>
+        </ReviewButtonContainer>
+      }
+    }
+  }
+
 
   return (
+    <>
     <ThumbContainer>
       <Thumb>
         <Row >
-          <Col span={!props.isReview? 12 : 24}>
-              <div>
-                    {props.theCompanyData.place_name}
-              </div>
-              <Address>
-                    {props.theCompanyData.road_address_name}
-              </Address>
-              <Row>
+          <Col span={!props.isReview ? 12 : 24}>
+            <div>
+              {props.theCompanyData.place_name}
+            </div>
+            <Address>
+              {props.theCompanyData.road_address_name}
+            </Address>
+
+            <CenterRow>
               <Button type="link" size="middle" onClick={placeUrl}>
-                  장소 링크
+                장소 링크
                 </Button>
-              </Row>
+            </CenterRow>
           </Col>
-  
-            {isReviewHandler()}
+          {isReviewHandler()}
         </Row>
       </Thumb>
     </ThumbContainer>
+    </>
   );
 }
 

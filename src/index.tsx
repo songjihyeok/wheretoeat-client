@@ -3,11 +3,30 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import styled from "styled-components"
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+const Container = styled.div`
+  display: flex; 
+  justify-content: center;
+  height: 100vh;
+`
+const MobileLayout = styled.div`
+  max-width: 512px;
+  width: 100%;
+  position: relative;
+  height: 100vh;
+`
 
 
 ReactDOM.render(
   <React.StrictMode>
-      <App />
+      <Container>
+        <MobileLayout>
+          <App />
+        </MobileLayout>
+      </Container>
   </React.StrictMode>,
   document.getElementById('root')
 );
