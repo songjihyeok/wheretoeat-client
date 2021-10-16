@@ -37,7 +37,7 @@ const StyledItem = styled(Form.Item)`
 
 
 export default function RegisterForm(props: IRegisterFormProps) {
-  const [Rating, setRating] = useState(5)
+  const [Rating, setRating] = useState(2.5)
   const [urlList, setUrlList] = useState([])
   let history = useHistory()
   const place_id =  props.match.params.id
@@ -46,11 +46,6 @@ export default function RegisterForm(props: IRegisterFormProps) {
 
   const onFinish = async (values: any) => {
     try {
-      console.log("value",values)
-      console.log("urls", urlList)
-      console.log("rating", Rating)
-
-
       let dataConfig = {
         title: values?.review?.name || "",
         content: values?.review?.introduction || "",

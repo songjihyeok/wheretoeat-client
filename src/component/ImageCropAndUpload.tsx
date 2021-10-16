@@ -41,7 +41,7 @@ export default function ImageCrop(props: IImageCropProps) {
       uid: '-1',
       name: 'image.png',
       status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      url: 'https://kakaomap.s3.ap-northeast-2.amazonaws.com/maxresdefault.jpeg',
     }
   ]);
 

@@ -18,38 +18,38 @@ initializeFirebase()
 
 const db = getFirestore();
 
-const CompanyThumb: React.FC<ICompanyThumbProps> = (props) => {
-  const ThumbContainer = styled.div`
-  width: 100%;
-  position:  ${props.isReview ? "static" : "absolute"}; 
-  display:flex;
-  bottom: 10px; 
-  z-index: 2;
-  justify-content:center;
+const Thumb = styled.div`
+max-width: 492px;
+width: 100%;
+background-color: white;
+height: 100px;
+padding: 10px;
+margin: 0 10px;
 `
-  const Thumb = styled.div`
-  max-width: 492px;
-  width: 100%;
-  background-color: white;
-  height: 100px;
-  padding: 10px;
-  margin: 0 10px;
+const Address = styled.div`
+text-overflow: ellipsis;
+white-space: nowrap;
+overflow: hidden;
 `
-  const Address = styled.div`
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+const ReviewButtonContainer = styled(Col)`
+align-items: center;
+display: flex; 
+justify-content: center;
 `
-  const ReviewButtonContainer = styled(Col)`
-  align-items: center;
-  display: flex; 
-  justify-content: center;
+const CenterRow = styled(Row)`
+display: flex; 
+justify-content: center;
 `
-  const CenterRow = styled(Row)`
-  display: flex; 
-  justify-content: center;
+const ThumbContainer = styled.div<{isReview: boolean}>`
+width: 100%;
+position:  ${props=> props?.isReview ? "static" : "absolute"}; 
+display:flex;
+bottom: 10px; 
+z-index: 2;
+justify-content:center;
 `
 
+const CompanyThumb: React.FC<ICompanyThumbProps> = (props) => {
   const [iisRegistered, setisRegistered] = useState(false)
   let history = useHistory()
 
@@ -140,7 +140,7 @@ const checkCompanyRegistered = async()=>{
 
   return (
     <>
-    <ThumbContainer>
+    <ThumbContainer isReview={props.isReview}>
       <Thumb>
         <Row >
           <Col span={!props.isReview ? 12 : 24}>

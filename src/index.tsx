@@ -4,8 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import styled from "styled-components"
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import "slick/slick.css";
+import "slick/slick-theme.css";
 
 const Container = styled.div`
   display: flex; 

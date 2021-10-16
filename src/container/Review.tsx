@@ -7,6 +7,7 @@ import { Link } from "react-router-dom"
 import { PageHeader } from 'antd';
 import { useHistory } from "react-router-dom"
 import initializeFirebase from "../firebaseConfig"
+import SlideShow from "component/SlideShow"
 
 import { getFirestore, addDoc, collection, query, where,getDocs ,getDoc,  doc} from "firebase/firestore"
 initializeFirebase()
@@ -16,6 +17,24 @@ const db = getFirestore();
 export interface ReviewProps {
   match:any
 }
+
+const StyledList=styled(List)`
+  margin: 10px 0;
+  .ant-list-item{
+    .ant-list-item-extra{
+      margin-left: 0px; 
+      display: flex;
+      justify-content: center;
+    }
+    .ant-list-item-meta{
+      align-items: center;
+      margin: 15px 0;
+    }
+    .ant-list-item-meta-title{
+      margin-bottom:0;
+    }
+  }
+`
 
 const Container = styled.div`
     display: flex; 
@@ -32,7 +51,7 @@ const ReviewPlusCircleFilled = styled(PlusCircleFilled)`
 `
 
 export default function Review(props: ReviewProps) {
-  let [theCompanyData, setTheCompanyData] = useState({
+  let [theCompanyData, setTheCompanyData] :any= useState({
     address_name: "서울 서초구 서초동 1321",
     category_group_code: "",
     category_group_name: "",
@@ -47,6 +66,7 @@ export default function Review(props: ReviewProps) {
     y: "37.49656165613922"
   })
   const  [review, setReview]  = useState([])
+  const [shop, setShop]:any = useState({})
   const place_id =  props.match.params.id
   let history = useHistory()
   let registerUrl = `/register/${place_id}`
@@ -63,21 +83,24 @@ export default function Review(props: ReviewProps) {
   },[])
 
  const getReviewList =async ()=>{
-
   const shopRef:any = collection(db, "shop");
   const q = query(shopRef, where("id", "==",  place_id));
   const querySnapshot = await getDocs(q);
+  
+
   querySnapshot.forEach(async(doc) => {
+    const shopData = doc.data()
+    setTheCompanyData(shopData)
     const Ref:any = await collection(db, "shop",   doc.id,  "review");
     const querySnapshot = await getDocs(Ref);
     let reviewList:any = []
     querySnapshot.forEach(async(doc) => {
-      console.log(doc.id, " => ", doc.data());
       reviewList.push(doc.data())
     });
     setReview(reviewList)
   });
  }
+
 
   return (
     <>
@@ -89,8 +112,8 @@ export default function Review(props: ReviewProps) {
       />
       <Container>
         <CompanyThumb theCompanyData={theCompanyData} isReview={true} setSuccessAlert={null}></CompanyThumb>
-        <List
-          itemLayout="vertical"
+   
+        <StyledList
           size="large"
           // pagination={{
           //   onChange: page => {
@@ -99,27 +122,16 @@ export default function Review(props: ReviewProps) {
           //   pageSize: 3,
           // }}
           dataSource={review}
-          // footer={
-          //   <div>
-          //     <b>ant design</b> footer part
-          //   </div>
-          // }
-          renderItem={(item: any | null) => (
-
-          
-            <List.Item
-              key={item.title}
+          renderItem={(item: any | null, index) => {
+            return  <List.Item
+              key={index}
+              extra={<SlideShow imageList={item?.urlList}/>}
               // actions={[
               //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
               //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
               //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
               // ]}
-              extra={
-               item.urlList.map((element:any)=>{
-                 console.log("element", element)
-                  return <img src={element}></img>
-                })
-              }
+          
             >
               <List.Item.Meta
                 avatar={<Avatar src={item.avatar} />}
@@ -128,7 +140,8 @@ export default function Review(props: ReviewProps) {
               />
               {item.content}
             </List.Item>
-          )}
+          }
+          }
         />
         <Link to={registerUrl}>
           <ReviewPlusCircleFilled style={{ fontSize: '50px' }} />

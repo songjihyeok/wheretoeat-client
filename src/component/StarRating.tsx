@@ -11,7 +11,7 @@ export interface IstarProp {
 
 export default function StarRating(props: IstarProp){
 
-  const [rating, setRating] = useState(5)
+  const [rating, setRating] = useState(3)
 
  const onStarClick=(nextValue:number, prevValue:number, name:string) =>{
   props.setRating( nextValue);
