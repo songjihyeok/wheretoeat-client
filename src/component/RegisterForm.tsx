@@ -6,7 +6,9 @@ import styled from "styled-components"
 import {useHistory} from "react-router-dom"
 import initializeFirebase from "../firebaseConfig"
 import { getFirestore, addDoc, collection, query, where,getDocs ,setDoc, doc,onSnapshot} from "firebase/firestore"
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+const auth = getAuth();
 initializeFirebase()
 
 const db = getFirestore();
@@ -39,37 +41,53 @@ const StyledItem = styled(Form.Item)`
 export default function RegisterForm(props: IRegisterFormProps) {
   const [Rating, setRating] = useState(2.5)
   const [urlList, setUrlList] = useState([])
+  const loginToken = window.localStorage.getItem("loginToken")
   let history = useHistory()
   const place_id =  props.match.params.id
   console.log("place_id",  place_id)
 
 
   const onFinish = async (values: any) => {
-    try {
-      let dataConfig = {
-        title: values?.review?.name || "",
-        content: values?.review?.introduction || "",
-        avatar: "",
-        rating: Rating,
-        urlList: urlList
-      }
+    if(!loginToken){
+      history.push("/signIn")
+    }
 
-      const shopRef:any = collection(db, "shop");
-      const q = query(shopRef, where("id", "==",  place_id));
-      const querySnapshot = await getDocs(q);
+    const auth = getAuth();
+    onAuthStateChanged(auth, async(user) => {
+        try {
+          if (!user){
+            return
+          } 
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+            const uid = user.uid;
+            console.log("user", user)
+            let dataConfig = {
+            uid: user.uid,
+            title: values?.review?.name || "",
+            content: values?.review?.introduction || "",
+            avatar: "",
+            rating: Rating,
+            urlList: urlList,
+            date: new Date()
+          }
+
+          const shopRef:any = collection(db, "shop");
+          const q = query(shopRef, where("id", "==",  place_id));
+          const querySnapshot = await getDocs(q);
 
 
-      querySnapshot.forEach(async(element) => {
-        if(element){
-          await addDoc(collection(db, "shop",  element.id,  "review"),  dataConfig);
+          querySnapshot.forEach(async(element) => {
+            if(element){
+              await addDoc(collection(db, "shop",  element.id,  "review"),  dataConfig);
+              }
+            });
+            history.goBack();
         }
-      });
-      history.goBack();
-    }
-    catch(e){
-      console.error(e)
-    }
-
+        catch(e){
+          console.error(e)
+        }
+    });
   };
 
 const getUrlList = (list:any)=>{
@@ -84,7 +102,7 @@ const getUrlList = (list:any)=>{
           <Input />
         </Form.Item>
         <Form.Item name={['review', 'introduction']} label="후기 내용">
-          <Input.TextArea style={{ height: '100px' }} />
+          <Input.TextArea style={{ height: '100px', whiteSpace: "pre-wrap"}} />
         </Form.Item>
         <StyledItem label="이미지" style={{ display: "flex" }}>
           <ImageCrop getUrlList ={getUrlList } urlList={urlList}></ImageCrop>

@@ -16,6 +16,12 @@ export interface  RegisterProps {
 
 export default function Register (props:  RegisterProps) {
     let history = useHistory()
+    const loginToken = window.localStorage.getItem("loginToken")
+
+    if(!loginToken){
+      history.push("/signIn")
+    }
+
   return (
       <>
            <PageHeader

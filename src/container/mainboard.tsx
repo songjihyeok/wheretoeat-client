@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
 import { Map } from "../component/map"
 import SearchInput from "../component/Search"
+import { getAuth, signOut } from "firebase/auth";
 import CompanyThumb  from "../component/CompanyThumb"
 import { Alert } from "antd"
 import styled from "styled-components"
-
+import {LogoutOutlined} from "@ant-design/icons"
 import { History } from 'history';
 export interface MainboardProps{
 
 } 
+
+const Search = styled(SearchInput)`
+position:absolute;
+top: 30px; 
+`
+const StyledLogOut  = styled(LogoutOutlined)`
+  position: absolute;
+  right: 30px; 
+  font-size: 30px;
+  z-index: 3;
+  top: 15px; 
+`
+
 
 const Mainboard: React.FC<MainboardProps> = ( ) => {
   let [theCompanyData, setTheCompanyData] = useState({
@@ -27,10 +41,7 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
   })
   const [successAlert, setSuccessAlert ] = useState(false)
 
-  const Search = styled(SearchInput)`
-    position:absolute;
-    top: 30px; 
-  `
+
 
   const getTheCompanyData = (companyData: any) => {
     setTheCompanyData(companyData)
@@ -41,9 +52,22 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
     setSuccessAlert(true)
   }
 
+ const onLogoutHandler = ()=>{
+    window.localStorage.removeItem("loginToken")
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      // Sign-out successful.
+      alert("로그아웃 되었습니다.")
+    }).catch((error) => {
+      // An error happened.
+    });
+ }
+
+
   return (
       <>
         <Search getTheCompanyData={getTheCompanyData}></Search>
+        <StyledLogOut onClick={onLogoutHandler}/>
         <Map setTheCompanyData={setTheCompanyData}></Map>
         {successAlert? <Alert message="등록이 성공했습니다" type="success" />: null}
         <CompanyThumb theCompanyData={theCompanyData} isReview={false} setSuccessAlert={onSetSuccessAlert}></CompanyThumb>

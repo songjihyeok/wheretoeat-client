@@ -4,6 +4,7 @@ import './App.css';
 import Mainboard from "../src/container/mainboard"
 import Review from "./container/Review"
 import Register from "./container/Register"
+import SignIn from "./container/SignIn"
 import 'antd/dist/antd.css';
 import { BrowserRouter, Route } from "react-router-dom"
 import { initializeApp } from 'firebase/app';
@@ -34,9 +35,11 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Route path="/" exact component={Mainboard}></Route>
+      <Route path="/" exact component={Mainboard}></Route>
         <Route path="/review/:id" component={Review}></Route>
         <Route path="/register/:id" component={Register}></Route>
+        <Route path="/signIn" exact component={SignIn}></Route>
+   
       </BrowserRouter>
     </div>
   )

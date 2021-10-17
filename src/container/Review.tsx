@@ -4,23 +4,26 @@ import { Space, List, Avatar } from "antd"
 import { MessageOutlined, LikeOutlined, StarOutlined, PlusCircleFilled } from '@ant-design/icons';
 import CompanyThumb from "../component/CompanyThumb"
 import { Link } from "react-router-dom"
-import { PageHeader } from 'antd';
+import { PageHeader ,Typography, Row, Divider} from 'antd';
 import { useHistory } from "react-router-dom"
 import initializeFirebase from "../firebaseConfig"
+import StarRatingComponent from 'react-star-rating-component';
 import SlideShow from "component/SlideShow"
 
-import { getFirestore, addDoc, collection, query, where,getDocs ,getDoc,  doc} from "firebase/firestore"
+import { getFirestore, addDoc, collection, query, where, getDocs, getDoc, doc } from "firebase/firestore"
 initializeFirebase()
 
 const db = getFirestore();
 
 export interface ReviewProps {
-  match:any
+  match: any
 }
 
-const StyledList=styled(List)`
+const StyledList = styled(List)`
+
   margin: 10px 0;
   .ant-list-item{
+    flex-direction: column;
     .ant-list-item-extra{
       margin-left: 0px; 
       display: flex;
@@ -28,6 +31,7 @@ const StyledList=styled(List)`
     }
     .ant-list-item-meta{
       align-items: center;
+      width: 100%;
       margin: 15px 0;
     }
     .ant-list-item-meta-title{
@@ -51,7 +55,7 @@ const ReviewPlusCircleFilled = styled(PlusCircleFilled)`
 `
 
 export default function Review(props: ReviewProps) {
-  let [theCompanyData, setTheCompanyData] :any= useState({
+  let [theCompanyData, setTheCompanyData]: any = useState({
     address_name: "서울 서초구 서초동 1321",
     category_group_code: "",
     category_group_name: "",
@@ -65,9 +69,10 @@ export default function Review(props: ReviewProps) {
     x: "127.02476096797658",
     y: "37.49656165613922"
   })
-  const  [review, setReview]  = useState([])
-  const [shop, setShop]:any = useState({})
-  const place_id =  props.match.params.id
+  const [review, setReview] = useState([])
+  const [shop, setShop]: any = useState({})
+  const place_id = props.match.params.id
+  const loginToken = window.localStorage.getItem("loginToken")
   let history = useHistory()
   let registerUrl = `/register/${place_id}`
 
@@ -78,29 +83,30 @@ export default function Review(props: ReviewProps) {
     </Space>
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     getReviewList()
-  },[])
+  }, [])
 
- const getReviewList =async ()=>{
-  const shopRef:any = collection(db, "shop");
-  const q = query(shopRef, where("id", "==",  place_id));
-  const querySnapshot = await getDocs(q);
-  
+  const getReviewList = async () => {
+    const shopRef: any = collection(db, "shop");
+    const q = query(shopRef, where("id", "==", place_id));
+    const querySnapshot = await getDocs(q);
 
-  querySnapshot.forEach(async(doc) => {
-    const shopData = doc.data()
-    setTheCompanyData(shopData)
-    const Ref:any = await collection(db, "shop",   doc.id,  "review");
-    const querySnapshot = await getDocs(Ref);
-    let reviewList:any = []
-    querySnapshot.forEach(async(doc) => {
-      reviewList.push(doc.data())
+
+    querySnapshot.forEach(async (doc) => {
+      const shopData = doc.data()
+      setTheCompanyData(shopData)
+      const Ref: any = await collection(db, "shop", doc.id, "review");
+
+      const querySnapshot = await getDocs(Ref);
+      let reviewList: any = []
+      querySnapshot.forEach(async (doc) => {
+        reviewList.push(doc.data())
+      });
+      reviewList.sort((a:any,b:any)=> b?.date?.seconds - a?.date?.seconds  )
+      setReview(reviewList)
     });
-    setReview(reviewList)
-  });
- }
-
+  }
 
   return (
     <>
@@ -112,7 +118,7 @@ export default function Review(props: ReviewProps) {
       />
       <Container>
         <CompanyThumb theCompanyData={theCompanyData} isReview={true} setSuccessAlert={null}></CompanyThumb>
-   
+
         <StyledList
           size="large"
           // pagination={{
@@ -123,22 +129,38 @@ export default function Review(props: ReviewProps) {
           // }}
           dataSource={review}
           renderItem={(item: any | null, index) => {
-            return  <List.Item
+            return <List.Item
               key={index}
-              extra={<SlideShow imageList={item?.urlList}/>}
-              // actions={[
-              //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-              //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-              //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-              // ]}
-          
+              extra={<><SlideShow imageList={item?.urlList} />
+                <div style={{ fontSize: 30 }}>
+
+                </div>
+              </>}
+            // actions={[
+            //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+            //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+            //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+            // ]}
+
             >
               <List.Item.Meta
                 avatar={<Avatar src={item.avatar} />}
                 title={<a href={item.href}>{item.title}</a>}
                 description={item.description}
               />
-              {item.content}
+              <StarRatingComponent
+                  name="starrate"
+                  starCount={5}
+                  value={item.rating}
+                />
+              <Row>
+              <Typography style={{marginTop: 10}}>
+                  <Typography.Paragraph>
+                  {item.content}
+                  </Typography.Paragraph>
+                </Typography>
+              </Row>
+        
             </List.Item>
           }
           }

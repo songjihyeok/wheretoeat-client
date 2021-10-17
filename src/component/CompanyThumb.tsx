@@ -57,6 +57,13 @@ const CompanyThumb: React.FC<ICompanyThumbProps> = (props) => {
     window.open(props.theCompanyData.place_url, "_blank")
   }
   const registerHandler = () => {
+
+    const token = localStorage.getItem("token")
+    if(!token){
+        history.push("/signIn")
+        return
+    }
+
     setisRegistered(true)
     props.setSuccessAlert(true)
     registerInfirebase()
@@ -108,7 +115,7 @@ const checkCompanyRegistered = async()=>{
     // doc.data() is never undefined for query doc snapshots
     result.push(doc.data())
   });
-  console.log("result",  result)
+
   if(result.length>0){
     setisRegistered(true)
   }else{
@@ -116,8 +123,10 @@ const checkCompanyRegistered = async()=>{
   }
 }
 
+
   const isReviewHandler = () => {
     if (!props.isReview) {
+
       if (!iisRegistered) {
         return <ReviewButtonContainer span={12} >  <Popconfirm
           title="장소를 등록하시겠습니까?"
