@@ -44,7 +44,7 @@ const ThumbContainer = styled.div<{isReview: boolean}>`
 width: 100%;
 position:  ${props=> props?.isReview ? "static" : "absolute"}; 
 display:flex;
-bottom: 10px; 
+bottom: 50px; 
 z-index: 2;
 justify-content:center;
 `
