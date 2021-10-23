@@ -23,7 +23,12 @@ const StyledList = styled(List)`
 
   margin: 10px 0;
   .ant-list-item{
+    margin: 20px 0;
+    background: rgb(255, 255, 255);
+    box-shadow: rgb(0 0 0 / 20%) 0px 8px 16px 0px;
+    border-radius: 10px;
     flex-direction: column;
+    
     .ant-list-item-extra{
       margin-left: 0px; 
       display: flex;
@@ -48,10 +53,15 @@ const Container = styled.div`
     height: 100vh;
 `
 
-const ReviewPlusCircleFilled = styled(PlusCircleFilled)`
+const StyledLink= styled(Link)`
   position: fixed;
   bottom: 30px; 
   right: 30px; 
+`
+
+
+const ReviewPlusCircleFilled = styled(PlusCircleFilled)`
+
 `
 
 export default function Review(props: ReviewProps) {
@@ -165,9 +175,9 @@ export default function Review(props: ReviewProps) {
           }
           }
         />
-        <Link to={registerUrl}>
+        <StyledLink to={registerUrl}>
           <ReviewPlusCircleFilled style={{ fontSize: '50px' }} />
-        </Link>
+        </StyledLink>
       </Container>
 
     </>

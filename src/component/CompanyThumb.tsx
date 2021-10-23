@@ -24,7 +24,10 @@ width: 100%;
 background-color: white;
 height: 100px;
 padding: 10px;
+border-radius: 10px;
 margin: 0 10px;
+background: rgb(255, 255, 255);
+box-shadow: rgb(0 0 0 / 20%) 0px 8px 16px 0px;
 `
 const Address = styled.div`
 text-overflow: ellipsis;
@@ -41,7 +44,7 @@ display: flex;
 justify-content: center;
 `
 const ThumbContainer = styled.div<{isReview: boolean}>`
-width: 100%;
+width:  ${props=> props?.isReview ? "350px" : "100%"};;
 position:  ${props=> props?.isReview ? "static" : "absolute"}; 
 display:flex;
 bottom: 50px; 
@@ -151,7 +154,7 @@ const checkCompanyRegistered = async()=>{
     <>
     <ThumbContainer isReview={props.isReview}>
       <Thumb>
-        <Row >
+        <Row style={{height: "100%"}}>
           <Col span={!props.isReview ? 12 : 24}>
             <div>
               {props.theCompanyData.place_name}

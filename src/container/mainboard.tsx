@@ -6,6 +6,7 @@ import CompanyThumb  from "../component/CompanyThumb"
 import { Alert } from "antd"
 import styled from "styled-components"
 import {LogoutOutlined} from "@ant-design/icons"
+import Logo from "../assets/havelunchLogo.png"
 import { History } from 'history';
 export interface MainboardProps{
 
@@ -22,9 +23,19 @@ const StyledLogOut  = styled(LogoutOutlined)`
   z-index: 3;
   top: 15px; 
 `
+const StyledImage = styled.img`
+  position:absolute;
+  top: 15px; 
+  left: 15px;
+  z-index: 3;
+  height: 70px;
+  width: 70px; 
+`
 
 
 const Mainboard: React.FC<MainboardProps> = ( ) => {
+  const loged = window.localStorage.getItem("loginToken");
+  let [isLoged, setIsLoged]= useState(loged)
   let [theCompanyData, setTheCompanyData] = useState({
     address_name: "서울 서초구 서초동 1321",
     category_group_code: "",
@@ -54,6 +65,7 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
 
  const onLogoutHandler = ()=>{
     window.localStorage.removeItem("loginToken")
+    setIsLoged(null)
     const auth = getAuth();
     signOut(auth).then(() => {
       // Sign-out successful.
@@ -66,10 +78,10 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
 
   return (
       <>
+      <StyledImage src={Logo}></StyledImage>
         <Search getTheCompanyData={getTheCompanyData}></Search>
-        <StyledLogOut onClick={onLogoutHandler}/>
+         {isLoged? <StyledLogOut onClick={onLogoutHandler}/> : null} 
         <Map setTheCompanyData={setTheCompanyData}></Map>
-        {successAlert? <Alert message="등록이 성공했습니다" type="success" />: null}
         <CompanyThumb theCompanyData={theCompanyData} isReview={false} setSuccessAlert={onSetSuccessAlert}></CompanyThumb>
     </>
   );

@@ -3,6 +3,7 @@ import { Upload, Progress } from "antd";
 import ImgCrop from 'antd-img-crop';
 import axios from "axios";
 import { RcFile as OriRcFile, UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
+import styled from "styled-components"
 
 export interface IImageCropProps {
   getUrlList: any
@@ -34,6 +35,23 @@ export declare type UploadFileStatus = 'error' | 'success' | 'done' | 'uploading
 export interface RcFile extends OriRcFile {
   readonly lastModifiedDate: Date;
 }
+
+const StyledUpload = styled(Upload)`
+.ant-upload-list{
+  flex-wrap: wrap;
+  .ant-load{
+    width: 30%;
+  }
+  .ant-upload-list-picture-card-container{
+    width: 30%;
+  }
+  .ant-upload.ant-upload-select-picture-card{
+    width: 30%;
+  }
+}
+`
+
+
 
 export default function ImageCrop(props: IImageCropProps) {
   const [fileList, setFileList] = useState<[UploadFile]>([
@@ -87,7 +105,6 @@ export default function ImageCrop(props: IImageCropProps) {
       let imageUrl: string = res.data.url
       props.getUrlList([...props.urlList, res.data.url ])
     } catch (err) {
-      console.log("Eroor: ", err);
       const error = new Error("Some error");
       onError({ err });
     }
@@ -99,7 +116,7 @@ export default function ImageCrop(props: IImageCropProps) {
 
   return (
     <ImgCrop rotate>
-      <Upload
+      <StyledUpload
         customRequest={uploadImage}
         listType="picture-card"
         fileList={fileList}
@@ -107,7 +124,7 @@ export default function ImageCrop(props: IImageCropProps) {
         onPreview={onPreview}
       >
         {fileList.length < 5 && '+ Upload'}
-      </Upload>
+      </StyledUpload>
     </ImgCrop>
   );
 }
