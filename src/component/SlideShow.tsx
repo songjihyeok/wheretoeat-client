@@ -39,7 +39,7 @@ const StyledSlider = styled(Slider)`
 export default function SlideShow({ imageList }: IslideShowProp) {
 
   const settings = {
-    infinite: true,
+    infinite: false,
     slidesToShow: 1,
     slidesToScroll: 1
   };

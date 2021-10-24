@@ -28,7 +28,9 @@ const StyledList = styled(List)`
     box-shadow: rgb(0 0 0 / 20%) 0px 8px 16px 0px;
     border-radius: 10px;
     flex-direction: column;
-    
+    .dv-star-rating{
+      font-size: 40px;
+    }
     .ant-list-item-extra{
       margin-left: 0px; 
       display: flex;
@@ -131,6 +133,9 @@ export default function Review(props: ReviewProps) {
 
         <StyledList
           size="large"
+          style={{
+            maxWidth:400
+          }}
           // pagination={{
           //   onChange: page => {
           //     console.log(page);
@@ -165,7 +170,7 @@ export default function Review(props: ReviewProps) {
                 />
               <Row>
               <Typography style={{marginTop: 10}}>
-                  <Typography.Paragraph>
+                  <Typography.Paragraph style={{maxWidth: 330}}>
                   {item.content}
                   </Typography.Paragraph>
                 </Typography>

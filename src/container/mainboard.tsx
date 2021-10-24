@@ -5,9 +5,9 @@ import { getAuth, signOut } from "firebase/auth";
 import CompanyThumb  from "../component/CompanyThumb"
 import { Alert } from "antd"
 import styled from "styled-components"
-import {LogoutOutlined} from "@ant-design/icons"
+import {LogoutOutlined,UserOutlined} from "@ant-design/icons"
+import { useHistory } from "react-router-dom"
 import Logo from "../assets/havelunchLogo.png"
-import { History } from 'history';
 export interface MainboardProps{
 
 } 
@@ -16,7 +16,7 @@ const Search = styled(SearchInput)`
 position:absolute;
 top: 30px; 
 `
-const StyledLogOut  = styled(LogoutOutlined)`
+const StyledUserOutlined  = styled(UserOutlined)`
   position: absolute;
   right: 30px; 
   font-size: 30px;
@@ -28,14 +28,14 @@ const StyledImage = styled.img`
   top: 15px; 
   left: 15px;
   z-index: 3;
-  height: 70px;
-  width: 70px; 
+  height: 40px;
+  width: 40px; 
 `
 
 
 const Mainboard: React.FC<MainboardProps> = ( ) => {
   const loged = window.localStorage.getItem("loginToken");
-  let [isLoged, setIsLoged]= useState(loged)
+ const history = useHistory()
   let [theCompanyData, setTheCompanyData] = useState({
     address_name: "서울 서초구 서초동 1321",
     category_group_code: "",
@@ -63,25 +63,12 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
     setSuccessAlert(true)
   }
 
- const onLogoutHandler = ()=>{
-    window.localStorage.removeItem("loginToken")
-    setIsLoged(null)
-    const auth = getAuth();
-    signOut(auth).then(() => {
-      // Sign-out successful.
-      alert("로그아웃 되었습니다.")
-    }).catch((error) => {
-      // An error happened.
-    });
- }
-
-
   return (
       <>
       <StyledImage src={Logo}></StyledImage>
         <Search getTheCompanyData={getTheCompanyData}></Search>
-         {isLoged? <StyledLogOut onClick={onLogoutHandler}/> : null} 
         <Map setTheCompanyData={setTheCompanyData}></Map>
+        <StyledUserOutlined onClick={()=> history.push("/profile")}></StyledUserOutlined>
         <CompanyThumb theCompanyData={theCompanyData} isReview={false} setSuccessAlert={onSetSuccessAlert}></CompanyThumb>
     </>
   );

@@ -18,7 +18,7 @@ export interface MapProps {
 
 const Kakaomap = styled.div`
     width: 100%;
-    height: 100vh;
+    height: 100%;
     position: static;
 `
 

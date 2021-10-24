@@ -43,6 +43,7 @@ export default function RegisterForm(props: IRegisterFormProps) {
   const [urlList, setUrlList] = useState([])
   const loginToken = window.localStorage.getItem("loginToken")
   let history = useHistory()
+  let form :any= Form.useForm()
   const place_id =  props.match.params.id
   console.log("place_id",  place_id)
 
@@ -61,7 +62,6 @@ export default function RegisterForm(props: IRegisterFormProps) {
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/firebase.User
             const uid = user.uid;
-            console.log("user", user)
             let dataConfig = {
             uid: user.uid,
             title: values?.review?.name || "",
@@ -94,15 +94,19 @@ const getUrlList = (list:any)=>{
     setUrlList(list)
 }
 
+const onEnterHandler = ()=>{
+  
+}
+
   return (
     <>
       <StarRating setRating={setRating}></StarRating>
-      <Form {...layout} style={{ width: "100%", padding: '0 10%' }} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+      <Form {...layout} style={{ width: "100%", padding: '0 10%' }} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages} >
         <Form.Item name={['review', 'name']} label="제목" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
         <Form.Item name={['review', 'introduction']} label="후기 내용">
-          <Input.TextArea style={{ height: '100px', whiteSpace: "pre-wrap"}} />
+          <Input.TextArea onPressEnter={onEnterHandler}style={{ height: '100px', whiteSpace: "pre-wrap"}} />
         </Form.Item>
         <StyledItem label="이미지" style={{ display: "flex" }}>
           <ImageCrop getUrlList ={getUrlList } urlList={urlList}></ImageCrop>
