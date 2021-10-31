@@ -86,7 +86,7 @@ export default function Profile({ }: Props): ReactElement {
 
     const onDeleteHandler=()=>{
         const auth = getAuth()
-        auth.
+
         auth.currentUser?.delete().then(()=>{
             window.localStorage.removeItem("loginToken");
             history.goBack()

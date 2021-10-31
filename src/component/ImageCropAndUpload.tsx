@@ -95,7 +95,7 @@ export default function ImageCrop(props: IImageCropProps) {
     fmData.append("file", file);
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}:3001/upload`,
+        `${process.env.REACT_APP_SERVER_URL}/upload`,
         fmData,
         config
       );

@@ -10,15 +10,12 @@ import "slick/slick-theme.css";
 const Container = styled.div`
   display: flex; 
   justify-content: center;
-  height: 100vh;
 `
 const MobileLayout = styled.div`
   max-width: 512px;
   width: 100%;
   position: relative;
-  height: 100vh;
-`
-
+ `
 
 ReactDOM.render(
   <React.StrictMode>

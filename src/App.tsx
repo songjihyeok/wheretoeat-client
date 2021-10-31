@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Mainboard from "./container/Mainboard"
@@ -8,6 +8,7 @@ import Register from "./container/Register"
 import SignIn from "./container/SignIn"
 import Clause from "./container/Clause"
 import Profile from "./container/Profile"
+import Home from "./container/Home"
 import 'antd/dist/antd.css';
 import { BrowserRouter, Route } from "react-router-dom"
 import { initializeApp } from 'firebase/app';
@@ -35,11 +36,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 function App() {
+
+
+ 
+
+
+
+
+
   return (
-    <div className="App" style={{height: "100%"}}> 
+    <div className="App" style={{height: `${window.innerHeight + "px"}`}}> 
       <BrowserRouter>
       <Route path="/" exact component={Mainboard}></Route>
         <Route path="/review/:id" component={Review}></Route>
+        <Route path="/home" component={Home}></Route>
         <Route path="/register/:id" component={Register}></Route>
         <Route path="/signIn" exact component={SignIn}></Route>
         <Route path="/privacy" exact component={Privacy}></Route>

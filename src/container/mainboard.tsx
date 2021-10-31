@@ -65,7 +65,7 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
 
   return (
       <>
-      <StyledImage src={Logo}></StyledImage>
+      <StyledImage src={Logo} onClick={()=>history.push("/home")}></StyledImage>
         <Search getTheCompanyData={getTheCompanyData}></Search>
         <Map setTheCompanyData={setTheCompanyData}></Map>
         <StyledUserOutlined onClick={()=> history.push("/profile")}></StyledUserOutlined>
