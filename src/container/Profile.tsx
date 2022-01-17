@@ -1,12 +1,19 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useState,useEffect } from 'react'
 import { PageHeader } from 'antd';
-import { getAuth, signInWithPopup, GoogleAuthProvider,signOut } from "firebase/auth";
+import { getAuth, signInWithPopup,onAuthStateChanged, GoogleAuthProvider,signOut } from "firebase/auth";
 import { Row, Col, Avatar } from "antd"
 import { UserOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from "styled-components"
 import { LogoutOutlined } from "@ant-design/icons"
 import Icon from '@ant-design/icons';
-import { useHistory } from "react-router-dom"
+import initializeFirebase from "../firebaseConfig"
+import { getFirestore, addDoc, collection, query, where, getDocs, getDoc, doc } from "firebase/firestore"
+import { Redirect, useHistory } from "react-router-dom"
+
+
+initializeFirebase()
+
+const db = getFirestore();
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
@@ -40,10 +47,10 @@ const StyledRow = styled(Row)`
 export default function Profile({ }: Props): ReactElement {
     const loged = window.localStorage.getItem("loginToken");
     let history = useHistory()
+    let [userName , setUserName]= useState("")
     let [isLoged, setIsLoged] = useState(loged)
 
     const onLogoutHandler = () => {
-        console.log("logout")
         setIsLoged(null)
         const auth = getAuth();
         signOut(auth).then(() => {
@@ -56,34 +63,6 @@ export default function Profile({ }: Props): ReactElement {
         });
     }
 
-    const onLoginHandler =()=>{
-        const auth = getAuth()
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential: any = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                // The signed-in user info.
-                const user = result.user;
-    
-                window.localStorage.setItem("loginToken", token)
-                console.log("login", user)
-                history.push("/")
-
-                // ...
-            }).catch((error) => {
-                // Handle Errors here.
-                alert("로그인에 실패했습니다.")
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.email;
-                // The AuthCredential type that was used.
-                const credential = GoogleAuthProvider.credentialFromError(error);
-                // ...
-            });
-    }
-
     const onDeleteHandler=()=>{
         const auth = getAuth()
 
@@ -91,48 +70,66 @@ export default function Profile({ }: Props): ReactElement {
             window.localStorage.removeItem("loginToken");
             history.goBack()
         })
-
-
-
-
     }
 
-    return (
-        <>
-            <PageHeader
-                className="site-page-header"
-                onBack={() => history.goBack()}
-                title="회원 정보"
-                subTitle="회원 정보 관리"
-            />
-            <Container>
-                <Avatar
-                    style={{ marginBottom: 30 }}
-                    size={150}
-                    icon={<UserOutlined />} />
-                {isLoged ? 
-                <>
-                <StyledRow>
-                    <Col span={6} style={{ fontSize: 30 }}><UserOutlined /></Col>
-                    <Col span={18} style={{ fontSize: 30, textAlign: "left" }}>닉네임</Col>
-                </StyledRow>
-                <StyledRow style={{ width: "100%", display: "flex", alignItems: "center" }}  onClick={onLogoutHandler} >
-                    <Col span={6}><StyledLogOut/></Col>
-                    <Col span={18} style={{ fontSize: 30, textAlign: "left" }}>로그아웃</Col>
-                </StyledRow>
-                <StyledRow style={{ width: "100%", display: "flex", alignItems: "center" }} onClick={onDeleteHandler}>
-                    <Col span={6} style={{ fontSize: 30 }} ><DeleteOutlined /></Col>
-                    <Col span={18} style={{ fontSize: 30, textAlign: "left" }}>탈퇴</Col>
-                </StyledRow>
-                </>
-                 : 
-                 <StyledRow onClick={onLoginHandler}>
-                 <Col span={6} style={{ fontSize: 30 }}><UserOutlined /></Col>
-                 <Col span={18} style={{ fontSize: 30, textAlign: "left" }}>로그인 하기</Col>
-             </StyledRow>
-                }
-                </Container>
-     
-        </>
-    )
+
+    useEffect(()=>{
+        const auth = getAuth();
+        onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+            const uid = user.uid;
+
+            const shopRef: any = collection(db, "user");
+            const q = query(shopRef, where("id", "==", uid));
+            const querySnapshot = await getDocs(q);
+
+            if(querySnapshot.docs){
+                let user: any = []
+                querySnapshot.forEach(async (doc) => {
+                    user.push(doc.data())
+                });
+                setUserName(user[0]?.username)
+            }
+        }
+        });
+    },[])
+
+
+
+
+
+    if(!isLoged){
+    return <Redirect to="/signIn" />
+    }else{
+        return (
+            <>
+                <PageHeader
+                    className="site-page-header"
+                    onBack={() => history.goBack()}
+                    title="회원 정보"
+                    subTitle="회원 정보 관리"
+                />
+                <Container>
+                    <Avatar
+                        style={{ marginBottom: 30 }}
+                        size={150}
+                        icon={<UserOutlined />} />
+                    <StyledRow>
+                        <Col span={6} style={{ fontSize: 30 }}><UserOutlined /></Col>
+                        <Col span={18} style={{ fontSize: 30, textAlign: "left" }}>{userName}</Col>
+                    </StyledRow>
+                    <StyledRow style={{ width: "100%", display: "flex", alignItems: "center" }}  onClick={onLogoutHandler} >
+                        <Col span={6}><StyledLogOut/></Col>
+                        <Col span={18} style={{ fontSize: 30, textAlign: "left" }}>로그아웃</Col>
+                    </StyledRow>
+                    {/* <StyledRow style={{ width: "100%", display: "flex", alignItems: "center" }} onClick={onDeleteHandler}>
+                        <Col span={6} style={{ fontSize: 30 }} ><DeleteOutlined /></Col>
+                        <Col span={18} style={{ fontSize: 30, textAlign: "left" }}>탈퇴</Col>
+                    </StyledRow> */}
+                    </Container>     
+            </>
+        )
+    }
 }

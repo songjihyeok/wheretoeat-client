@@ -45,7 +45,6 @@ export default function RegisterForm(props: IRegisterFormProps) {
   let history = useHistory()
   let form :any= Form.useForm()
   const place_id =  props.match.params.id
-  console.log("place_id",  place_id)
 
 
   const onFinish = async (values: any) => {

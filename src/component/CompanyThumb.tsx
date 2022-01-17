@@ -61,7 +61,7 @@ const CompanyThumb: React.FC<ICompanyThumbProps> = (props) => {
   }
   const registerHandler = () => {
 
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("loginToken")
     if(!token){
         history.push("/signIn")
         return

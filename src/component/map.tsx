@@ -51,7 +51,7 @@ const getAllData = async() =>{
       // doc.data() is never undefined for query doc snapshots
       result.push(doc.data())
     });
-    console.log(result)
+
     setAllData(result)
 }
 

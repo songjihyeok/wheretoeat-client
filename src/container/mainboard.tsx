@@ -18,18 +18,18 @@ top: 30px;
 `
 const StyledUserOutlined  = styled(UserOutlined)`
   position: absolute;
-  right: 30px; 
+  right: 5%; 
   font-size: 30px;
   z-index: 3;
-  top: 15px; 
+  top: 2%; 
 `
 const StyledImage = styled.img`
   position:absolute;
-  top: 15px; 
-  left: 15px;
+  top: 2%; 
+  left: 3%;
   z-index: 3;
-  height: 40px;
-  width: 40px; 
+  height: 50px;
+  width: 50px; 
 `
 
 

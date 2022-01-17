@@ -21,6 +21,9 @@ const StyledText = styled(Text)`
 const StyledRow = styled(Row)`
     margin: 20px 0;
 `
+const StyledImage = styled.img`
+    max-width: 330px;
+`
 
 
 export default function Home({ }: IProps): ReactElement {
@@ -29,13 +32,13 @@ export default function Home({ }: IProps): ReactElement {
         <>
                <PageHeader
                 className="site-page-header"
-                onBack={() => history.push("/")}
+                onBack={() => history.goBack()}
                 title="홈페이지"
                 subTitle="서비스 소개"
             />
             <Typography>
             <div style={{ marginTop: 30 }}>
-                <Title >나의 맛집을 모두에게 소개하세요</Title>
+                <Title >나의 맛집을 <br/>모두에게 소개하세요</Title>
             </div>
             <Divider></Divider>
             <Card>
@@ -44,27 +47,27 @@ export default function Home({ }: IProps): ReactElement {
 
                 </StyledRow>
                 <Row>
-                    <Col span={24} >  <img src={Search}></img></Col>
+                    <Col span={24} >  <StyledImage src={Search}></StyledImage></Col>
                 </Row>
                 <StyledRow>
                     <Col span={24}> <StyledText>2. 간편하게 로그인 한 이후에</StyledText><br /></Col>
 
                 </StyledRow>
 
-                <Col span={24} >  <img src={Login}></img></Col>
+                <Col span={24} >  <StyledImage src={Login}></StyledImage></Col>
                 <StyledText>3. 장소를 등록하고</StyledText><br />
 
                 <StyledRow>
-                    <Col span={24} >  <img src={Register}></img></Col>
+                    <Col span={24} >  <StyledImage src={Register}></StyledImage></Col>
                 </StyledRow>
 
                 <StyledText>4. 리뷰를 남기세요.</StyledText>
                 <StyledRow>
-                    <Col span={24} >  <img src={MakeReview}></img></Col>
+                    <Col span={24} >  <StyledImage src={MakeReview}></StyledImage></Col>
                 </StyledRow>
                 <StyledText>5. 리뷰를 보고 뭘 먹을지 선택하세요.</StyledText>
                 <StyledRow>
-                    <Col span={24} >  <img src={Review}></img></Col>
+                    <Col span={24} >  <StyledImage src={Review}></StyledImage></Col>
                 </StyledRow>
             </Card>
         </Typography>

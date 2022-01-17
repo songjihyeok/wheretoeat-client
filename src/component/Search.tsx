@@ -36,7 +36,6 @@ const SearchInput: React.FunctionComponent<SearchInputProps> = ({ getTheCompanyD
   }
 
   const onSelect = (value: string, option: any) => {
-    console.log("options", data)
     let target = data.find((item: any) => item.id === option.key)
     if (target) {
       var markerPosition = new window.kakao.maps.LatLng(target["y"], target["x"]);

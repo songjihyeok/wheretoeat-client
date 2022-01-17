@@ -4,7 +4,7 @@ import { Space, List, Avatar } from "antd"
 import { MessageOutlined, LikeOutlined, StarOutlined, PlusCircleFilled } from '@ant-design/icons';
 import CompanyThumb from "../component/CompanyThumb"
 import { Link } from "react-router-dom"
-import { PageHeader ,Typography, Row, Divider} from 'antd';
+import { PageHeader ,Typography, Row, Divider, Spin} from 'antd';
 import { useHistory } from "react-router-dom"
 import initializeFirebase from "../firebaseConfig"
 import StarRatingComponent from 'react-star-rating-component';
@@ -20,7 +20,6 @@ export interface ReviewProps {
 }
 
 const StyledList = styled(List)`
-
   margin: 10px 0;
   .ant-list-item{
     margin: 20px 0;
@@ -51,6 +50,7 @@ const Container = styled.div`
     display: flex; 
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     position: relative;
     height: 100vh;
 `
@@ -59,6 +59,7 @@ const StyledLink= styled(Link)`
   position: fixed;
   bottom: 30px; 
   right: 30px; 
+  z-index: 5;
 `
 
 
@@ -82,7 +83,7 @@ export default function Review(props: ReviewProps) {
     y: "37.49656165613922"
   })
   const [review, setReview] = useState([])
-  const [shop, setShop]: any = useState({})
+  const [loading, setLoading]  = useState<boolean>(false)
   const place_id = props.match.params.id
   const loginToken = window.localStorage.getItem("loginToken")
   let history = useHistory()
@@ -100,6 +101,7 @@ export default function Review(props: ReviewProps) {
   }, [])
 
   const getReviewList = async () => {
+    setLoading(true)
     const shopRef: any = collection(db, "shop");
     const q = query(shopRef, where("id", "==", place_id));
     const querySnapshot = await getDocs(q);
@@ -115,33 +117,46 @@ export default function Review(props: ReviewProps) {
       querySnapshot.forEach(async (doc) => {
         reviewList.push(doc.data())
       });
-      reviewList.sort((a:any,b:any)=> b?.date?.seconds - a?.date?.seconds  )
+      reviewList.sort((a:any,b:any)=> b?.date?.seconds - a?.date?.seconds )
+
+      // const result = await Promise.all( reviewList.map(async(element)=>{
+      //   const shopRef: any = collection(db, "shop");
+      //   console.log(shopRef)
+
+        // const q = query(shopRef, where("id", "==", element.id));
+        // const querySnapshot = await getDocs(q);
+        // let usernames: any = []
+        // querySnapshot.forEach(async (doc) => {
+        //   usernames.push(doc.data())
+        // });
+        // if( usernames[0]?.username ){
+        //   element.username = usernames[0]?.username 
+        // }
+        // return element 
+        // })
+      // )
       setReview(reviewList)
-    });
+      setLoading(false)
+    })
   }
+
 
   return (
     <>
       <PageHeader
         className="site-page-header"
-        onBack={() => history.goBack()}
+        onBack={() => history.replace("/list")}
         title="리뷰 목록"
         subTitle="후기를 공유합니다"
       />
       <Container>
-        <CompanyThumb theCompanyData={theCompanyData} isReview={true} setSuccessAlert={null}></CompanyThumb>
-
+          {loading?  <Spin></Spin>  :   <>
+         <CompanyThumb theCompanyData={theCompanyData} isReview={true} setSuccessAlert={null}></CompanyThumb>
         <StyledList
           size="large"
           style={{
-            maxWidth:400
+            maxWidth:330
           }}
-          // pagination={{
-          //   onChange: page => {
-          //     console.log(page);
-          //   },
-          //   pageSize: 3,
-          // }}
           dataSource={review}
           renderItem={(item: any | null, index) => {
             return <List.Item
@@ -159,7 +174,10 @@ export default function Review(props: ReviewProps) {
 
             >
               <List.Item.Meta
-                avatar={<Avatar src={item.avatar} />}
+                avatar={<div style={{display: "flex"}}> 
+                <Avatar src={item.avatar} />
+                  <div style={{marginLeft: 10, display:"flex", alignItems:"center"}}>{item.username}</div>
+                </div>}
                 title={<a href={item.href}>{item.title}</a>}
                 description={item.description}
               />
@@ -170,12 +188,12 @@ export default function Review(props: ReviewProps) {
                 />
               <Row>
               <Typography style={{marginTop: 10}}>
-                  <Typography.Paragraph style={{maxWidth: 330}}>
+                  <Typography.Paragraph style={{maxWidth: 280}}>
                   {item.content}
                   </Typography.Paragraph>
                 </Typography>
               </Row>
-        
+
             </List.Item>
           }
           }
@@ -183,8 +201,9 @@ export default function Review(props: ReviewProps) {
         <StyledLink to={registerUrl}>
           <ReviewPlusCircleFilled style={{ fontSize: '50px' }} />
         </StyledLink>
+          </>
+          }
       </Container>
-
-    </>
+      </>
   );
 }

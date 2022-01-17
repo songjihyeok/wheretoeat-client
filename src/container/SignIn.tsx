@@ -2,7 +2,13 @@ import * as React from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { Typography, Divider, Button, PageHeader } from 'antd';
 import styled from "styled-components"
-import {useHistory} from "react-router-dom"
+import { useHistory } from "react-router-dom"
+import initializeFirebase from "../firebaseConfig"
+import { getFirestore, addDoc, collection, query, where, getDocs, getDoc, doc } from "firebase/firestore"
+initializeFirebase()
+
+const db = getFirestore();
+
 const { Title, Paragraph, Text } = Typography;
 const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
@@ -26,6 +32,7 @@ export default function SignIn(props: ISignInProps) {
     let history = useHistory()
 
     const onSignHandler = () => {
+        window.localStorage.removeItem("loginToken")
         const auth = getAuth()
         signInWithPopup(auth, provider)
             .then((result) => {
@@ -34,13 +41,36 @@ export default function SignIn(props: ISignInProps) {
                 const token = credential.accessToken;
                 // The signed-in user info.
                 const user = result.user;
-    
-                window.localStorage.setItem("loginToken", token)
-                console.log("login", user)
-                history.push("/")
-
+                const userRef: any = collection(db, "user");
+                const q = query(userRef, where("id", "==", user.uid));
+                const querySnapshot =  getDocs(q);
                 // ...
-            }).catch((error) => {
+                return querySnapshot.then((result)=>{
+                    return [token , result, user.uid]
+                })
+            }).then((result)=>{
+                
+                const [ token , querySnapshot, userId ] = result
+    
+                let resultArray = []
+                if(querySnapshot?.docs){
+                    resultArray = querySnapshot?.docs
+                }
+                if( resultArray.length>0){
+                    window.localStorage.setItem("loginToken", token)
+                    history.push("/")
+                }else{
+                    history.push({
+                        pathname:"/nickNameForm",
+                        state: {
+                            token: token,
+                            userId: userId
+                        }   
+                    })
+                }
+          
+            })
+            .catch((error) => {
                 // Handle Errors here.
                 alert("로그인에 실패했습니다.")
                 const errorCode = error.code;
@@ -56,12 +86,12 @@ export default function SignIn(props: ISignInProps) {
 
 
     return (<>
-          <PageHeader
-        className="site-page-header"
-        onBack={() => history.push("/")}
-        title="로그인"
-        subTitle="로그인해주세요"
-      />
+        <PageHeader
+            className="site-page-header"
+            onBack={() => history.push("/")}
+            title="로그인"
+            subTitle="로그인해주세요"
+        />
         <CenterLayout>
             <div>
                 <Title>
@@ -75,6 +105,6 @@ export default function SignIn(props: ISignInProps) {
                 </div>
             </div>
         </CenterLayout>
-        </>
+    </>
     );
 }

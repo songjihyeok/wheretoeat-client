@@ -64,7 +64,6 @@ export default function ImageCrop(props: IImageCropProps) {
   ]);
 
   const onChange = ({ fileList: newFileList }: { fileList: any }) => {
-    console.log("fileList", fileList)
     setFileList(newFileList);
   };
 
@@ -101,7 +100,6 @@ export default function ImageCrop(props: IImageCropProps) {
       );
 
       onSuccess("Ok");
-      console.log("server res: ", res);
       let imageUrl: string = res.data.url
       props.getUrlList([...props.urlList, res.data.url ])
     } catch (err) {

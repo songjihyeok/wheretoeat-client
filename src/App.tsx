@@ -9,6 +9,8 @@ import SignIn from "./container/SignIn"
 import Clause from "./container/Clause"
 import Profile from "./container/Profile"
 import Home from "./container/Home"
+import List from "./container/List"
+import NickNameForm from "./container/NickNameForm"
 import 'antd/dist/antd.css';
 import { BrowserRouter, Route } from "react-router-dom"
 import { initializeApp } from 'firebase/app';
@@ -37,17 +39,11 @@ const app = initializeApp(firebaseConfig);
 
 function App() {
 
-
- 
-
-
-
-
-
   return (
     <div className="App" style={{height: `${window.innerHeight + "px"}`}}> 
       <BrowserRouter>
       <Route path="/" exact component={Mainboard}></Route>
+      <Route path="/nickNameForm" component={NickNameForm}></Route>
         <Route path="/review/:id" component={Review}></Route>
         <Route path="/home" component={Home}></Route>
         <Route path="/register/:id" component={Register}></Route>
@@ -55,6 +51,7 @@ function App() {
         <Route path="/privacy" exact component={Privacy}></Route>
         <Route path="/clause" exact component={Clause}></Route>
         <Route path="/profile" exact component={Profile}></Route>
+        <Route path="/list" exact component={List}></Route>
       </BrowserRouter>
     </div>
   )
