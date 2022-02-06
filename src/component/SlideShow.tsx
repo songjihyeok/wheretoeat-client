@@ -47,10 +47,6 @@ export default function SlideShow({ imageList }: IslideShowProp) {
   return (
 
     <StyledSlider easing="ease"  {...settings}>
-
-
-
-
       {imageList && imageList.length > 0 ? imageList.map((url, index) => {
         return <div className="each-slide" key={index}>
           <div style={{ 'backgroundImage': `url(${url}`, width: "100%", height: "300px" }}>

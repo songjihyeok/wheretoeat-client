@@ -17,7 +17,7 @@ const { Title, Text } = Typography;
 interface Props {
 
 }
-const ListRow = styled(Row)`
+const ListWrapRow = styled(Row)`
 width: 100%;
 height: calc(100% - 38px);
 overflow: scroll;
@@ -40,15 +40,12 @@ export default function ListComponent({ }: Props): ReactElement {
             const querySnapshot=await getDocs(shopRef);
             let shopList:any = []
             querySnapshot.forEach(async(doc)=>{
-               console.log("data", doc.data()) 
                const data: any = doc.data()
                shopList.push(data)
             })
             setData(shopList)
         }
-
         getShopsData()
-
     },[])
 
 
@@ -59,14 +56,14 @@ export default function ListComponent({ }: Props): ReactElement {
     
 
     return (
-        <ListRow>
-            <List
+        <ListWrapRow>
+            <StyledList
                 itemLayout="horizontal"
                 style={{ width: "100%" }}
                 dataSource={data}
                 renderItem={(item: any) => (
-                    <List.Item >
-                        <Row style={{ width: "100%" }}>
+                    <List.Item>
+                        <ListRow >
                             <Col
                                 span={5}
                                 style={{
@@ -86,11 +83,11 @@ export default function ListComponent({ }: Props): ReactElement {
                             <StyledButtonCol span={7} onClick={()=>onReview(item.id)}>
                                 <Button>리뷰 보러가기</Button>
                             </StyledButtonCol>
-                        </Row>
+                        </ListRow>
                     </List.Item>
                 )}
             />
-        </ListRow>
+        </ListWrapRow>
     )
 }
 
@@ -98,5 +95,12 @@ const StyledButtonCol = styled(Col)`
     display: flex;
     align-items: center;
     justify-content: center;
+`
 
+const ListRow = styled(Row)`
+    width: 100%;
+`
+
+const StyledList= styled(List)`
+    margin-top :10px;
 `

@@ -7,7 +7,9 @@ import initializeFirebase from "../firebaseConfig"
 import { initializeApp } from 'firebase/app';
 
 import { getFirestore, addDoc, collection, query, where,getDocs ,getDoc, onSnapshot} from "firebase/firestore"
-import { IdcardOutlined } from '@ant-design/icons';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
 
 export interface ICompanyThumbProps {
   theCompanyData: any
@@ -22,7 +24,7 @@ const Thumb = styled.div`
 max-width: 492px;
 width: 100%;
 background-color: white;
-height: 100px;
+min-height: 100px;
 padding: 10px;
 border-radius: 10px;
 margin: 0 10px;
@@ -74,12 +76,13 @@ const CompanyThumb: React.FC<ICompanyThumbProps> = (props) => {
   }
 
     const registerInfirebase = async()=>{
-
+      const auth = getAuth();
       const {id, place_name, place_url, x, y} = props.theCompanyData
-
+      const user = auth.currentUser;
       try {
         const docRef = await addDoc(collection(db, "shop"),{
           id,
+          userId: user,
           place_name,
           place_url,
           x,
@@ -128,7 +131,18 @@ const checkCompanyRegistered = async()=>{
 
 
   const isReviewHandler = () => {
-    if (!props.isReview) {
+    if(props.isReview){
+      return <ReviewButtonContainer span={24} >  <Popconfirm
+      title="리뷰를 등록하시겠습니까?"
+      onConfirm={registerHandler}
+      onCancel={cancel}
+      okText="네"
+      cancelText="아니오"
+    >
+      <Button style={{margin: 10}}>리뷰 등록</Button>
+    </Popconfirm>
+    </ReviewButtonContainer>
+    }
 
       if (!iisRegistered) {
         return <ReviewButtonContainer span={12} >  <Popconfirm
@@ -146,7 +160,6 @@ const checkCompanyRegistered = async()=>{
           <Button onClick={reviewHandler}>리뷰 확인</Button>
         </ReviewButtonContainer>
       }
-    }
   }
 
 
