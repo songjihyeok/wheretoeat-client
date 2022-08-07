@@ -58,7 +58,7 @@ const getAllData = async() =>{
 useEffect(()=>{
     var container = document.getElementById('map');
     var options = {
-        center: new window.kakao.maps.LatLng(37.49692967407533, 127.02473764283866),
+        center: new window.kakao.maps.LatLng(37.496486063, 127.028361548),
         level: 4
     };
     kakaoMapAPI = new window.kakao.maps.Map(container, options);

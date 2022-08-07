@@ -37,19 +37,20 @@ const Mainboard: React.FC<MainboardProps> = ( ) => {
   const loged = window.localStorage.getItem("loginToken");
  const history = useHistory()
   let [theCompanyData, setTheCompanyData] = useState({
-    address_name: "서울 서초구 서초동 1321",
+    address_name: "서울특별시 강남구 강남대로 지하 396",
     category_group_code: "",
     category_group_name: "",
-    category_name: "서비스,산업 > 에너지 > 에너지기업",
+    category_name: "강남역",
     distance: "",
     id: "609743440",
-    phone: "02-6931-0901",
-    place_name: "솔라커넥트",
-    place_url: "http://place.map.kakao.com/609743440",
-    road_address_name: "서울 서초구 서초대로 396",
-    x: "127.02476096797658",
-    y: "37.49656165613922"
-  })
+    phone: "",
+    place_name: "강남역",
+    place_url: "",
+    road_address_name: "",
+    x: "127.028361548",
+    y: "37.496486063"
+  }) 
+
   const [successAlert, setSuccessAlert ] = useState(false)
 
 

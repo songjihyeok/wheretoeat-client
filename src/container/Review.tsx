@@ -152,7 +152,7 @@ export default function Review(props: ReviewProps) {
     <>
       <PageHeader
         className="site-page-header"
-        onBack={() => history.replace("/list")}
+        onBack={() => history.replace("/")}
         title="리뷰 목록"
         subTitle="후기를 공유합니다"
       />
